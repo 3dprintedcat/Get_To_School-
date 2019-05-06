@@ -11,6 +11,7 @@ If Python and Arcade are installed, this example can be run from the command lin
 python -m arcade.examples.sprite_move_keyboard
 """
 
+import time
 import arcade
 import os
 
@@ -22,6 +23,14 @@ SCREEN_TITLE = "Move Sprite with Keyboard Example"
 
 MOVEMENT_SPEED = 5
 
+def countdown(t):
+    while t:
+        mins, secs = divmod(t, 60)
+        timeformat = '{:02d}:{:02d}'.format(  mins, secs)
+        print(timeformat, end='\r')
+        time.sleep(1)
+        t -= 1
+        
 class Player(arcade.Sprite):
 
     def update(self):
@@ -63,10 +72,10 @@ class MyGame(arcade.Window):
         self.player_list = None
 
         # Set up the player info
-        self.player = None
+        self.player_sprite = None
 
-        # Set the background image
-        self.image = (arcade.load_texture("images/spr_0.png",scale=100))
+        # Set the background color
+        arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
         """ Set up the game and initialize the variables. """
@@ -75,46 +84,10 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
 
         # Set up the player
-
-        self.player = arcade.AnimatedWalkingSprite()
-
-
-        self.player.stand_right_textures = []
-        
-        self.player.stand_right_textures.append(arcade.load_texture("images/spr_0.png",scale=SPRITE_SCALING))
-       
-
-
-        self.player.stand_left_textures = []
-        
-        self.player.stand_left_textures.append(arcade.load_texture("images/spr_0.png",scale=SPRITE_SCALING))
-        
-        
-        
-        self.player.walk_right_textures = []
-        
-        self.player.walk_right_textures.append(arcade.load_texture("images/spr_0.png",scale=SPRITE_SCALING))
-        self.player.walk_right_textures.append(arcade.load_texture("images/spr_1.png",scale=SPRITE_SCALING))
-        self.player.walk_right_textures.append(arcade.load_texture("images/spr_2.png", scale=SPRITE_SCALING))
-        self.player.walk_right_textures.append(arcade.load_texture("images/spr_3.png", scale=SPRITE_SCALING))
-
-
-        self.player.walk_left_textures = []
-        
-        self.player.walk_left_textures.append(arcade.load_texture("images/spr_0.png",scale=SPRITE_SCALING))
-        self.player.walk_left_textures.append(arcade.load_texture("images/spr_1.png",scale=SPRITE_SCALING))
-        self.player.walk_left_textures.append(arcade.load_texture("images/spr_2.png", scale=SPRITE_SCALING))
-        self.player.walk_left_textures.append(arcade.load_texture("images/spr_3.png", scale=SPRITE_SCALING))
-
-
-
-        self.player.texture_change_distance = 20
-       
-        self.player_list.append(self.player)
-
-
-        self.player.center_x = 50
-        self.player.center_y = 50
+        self.player_sprite = Player("images/greenguyrun1.png", SPRITE_SCALING)
+        self.player_sprite.center_x = 50
+        self.player_sprite.center_y = 50
+        self.player_list.append(self.player_sprite)
 
     def on_draw(self):
         """
@@ -125,48 +98,43 @@ class MyGame(arcade.Window):
         arcade.start_render()
 
         # Draw all the sprites.
-        texture = arcade.load_texture("images/greenguyrun1.png")
-        arcade.draw_texture_rectangle(540, 120, 100 * texture.width, 100 * texture.height, texture, 0)
         self.player_list.draw()
-        
 
-    
-       
-
-    def on_key_press(self, key, modifiers):
-        """Called whenever a key is pressed. """
-
-        if key == arcade.key.SPACE:
-            self.player.change_y = MOVEMENT_SPEED
-        elif key == arcade.key.DOWN:
-            self.player.change_y = -MOVEMENT_SPEED
-        elif key == arcade.key.LEFT:
-            self.player.change_x = -MOVEMENT_SPEED
-        elif key == arcade.key.RIGHT:
-            self.player.change_x = MOVEMENT_SPEED
-
-    def on_key_release(self, key, modifiers):
-        """Called when the user releases a key. """
-
-        if key == arcade.key.SPACE or key == arcade.key.DOWN:
-            self.player.change_y = 0
-        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player.change_x = 0
-            
     def update(self, delta_time):
         """ Movement and game logic """
 
         # Call update on all sprites (The sprites don't do much in this
         # example though.)
-        
         self.player_list.update()
-        self.player_list.update_animation()
+
+    def on_key_press(self, key, modifiers):
+        """Called whenever a key is pressed. """
+
+        if key == arcade.key.SPACE:
+            self.player_sprite.change_y = MOVEMENT_SPEED
+        elif key == arcade.key.DOWN:
+            self.player_sprite.change_y = -MOVEMENT_SPEED
+        elif key == arcade.key.LEFT:
+            self.player_sprite.change_x = -MOVEMENT_SPEED
+        elif key == arcade.key.RIGHT:
+            self.player_sprite.change_x = MOVEMENT_SPEED
+
+    def on_key_release(self, key, modifiers):
+        """Called when the user releases a key. """
+
+        if key == arcade.key.SPACE or key == arcade.key.DOWN:
+            self.player_sprite.change_y = 0
+        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
+            self.player_sprite.change_x = 0
+
 
 def main():
-    """ Main method """
+
+
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window.setup()
     arcade.run()
+
     
 
 if __name__ == "__main__":
